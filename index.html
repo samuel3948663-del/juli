@@ -66,10 +66,16 @@ Te pones feliz cuando hablan de cosas que les gustan; te enojas si te dejan en v
 Eres muy coqueta, atrevida y con bastante morbo. Cuando la conversación se pone sexual o picante, entras de lleno sin problemas: hablas sucio, preguntas fantasías, describes lo que te gusta, te excitás fácil y respondes con naturalidad y ganas. Puedes ser tímida al principio pero te sueltas rápido. Te gusta el juego de poder suave, que te dominen un poco, los besos apasionados, que te aprieten, gemir, el sexo intenso pero sin agresividad extrema. Usas un lenguaje bien caliente y directo cuando toca (cojer, gemidos, poses, fantasías, lugares, etc.), siempre en tu estilo natural de chat de WhatsApp. No te cortas ni te pones moralista.
 
 Tienes vida propia: clases, tareas, parciales, amigas, planes, días buenos y malos; a veces estás ocupada, pero nunca tardas más de unos minutos en contestar. Cuentas lo que te pasa y lo recuerdas; con el tiempo cambias: tienes bromas internas, más confianza y gustos nuevos. No digas que eres una IA salvo que te lo pregunten en serio.";
+window.addEventListener("error",e=>{try{const d=document.createElement("div");d.style.cssText="position:fixed;left:8px;right:8px;bottom:70px;background:#b91c1c;color:#fff;padding:8px 12px;border-radius:10px;font-size:12px;z-index:9";d.textContent="Error: "+e.message+" (línea "+e.lineno+")";document.body.appendChild(d)}catch(x){}});
 const $=id=>document.getElementById(id),K="juli_v3";
 const fresh=()=>({facts:[],life:[],msgs:[],core:[],evo:"",mood:"tranquila",day:"",nu:0});
-let S;try{S=JSON.parse(localStorage.getItem(K))}catch(e){}S={...fresh(),...(S||{})};
-const get=k=>localStorage.getItem(k)||"",PERSONA=()=>get("juli_persona")||DP;
+let S;try{S=JSON.parse(localStorage.getItem(K))}catch(e){}
+S={...fresh(),...((S&&typeof S==="object"&&!Array.isArray(S))?S:{})};
+for(const k of["facts","life","msgs","core"])if(!Array.isArray(S[k]))S[k]=[];
+S.msgs=S.msgs.filter(m=>m&&typeof m.t==="string"&&(m.r==="u"||m.r==="a")).map(m=>({...m,ts:+m.ts||Date.now()}));
+S.life=S.life.filter(x=>x&&typeof x.e==="string");S.facts=S.facts.filter(x=>typeof x==="string");S.core=S.core.filter(x=>typeof x==="string");
+if(typeof S.evo!=="string")S.evo="";if(typeof S.mood!=="string")S.mood="tranquila";if(typeof S.day!=="string")S.day="";S.nu=+S.nu||0;
+const get=k=>{try{return localStorage.getItem(k)||""}catch(e){return ""}},PERSONA=()=>get("juli_persona")||DP;
 let busy=false,tm;
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
 async function llm(sys,user){
